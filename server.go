@@ -107,6 +107,8 @@ func main() {
 		log.Fatalf("Error: %s", err.Error())
 	}
 
+	gin.SetMode(gin.ReleaseMode)
+
 	r := gin.Default()
 	r.GET("/check", func(c *gin.Context) {
 		var params struct {
