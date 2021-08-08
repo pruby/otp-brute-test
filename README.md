@@ -32,6 +32,6 @@ The server binds by default to port 3000, and can be invoked with a URL like the
 
 `http://127.0.0.1:3000/check?code=123456`
 
-It will return "BAD" for invalid requests to this endpoint (i.e. missing a code), "NO" for an incorrect guess and
-"OK" for a correct one. It otherwise does nothing with the code.
+It will return code 400 with a body of "BAD" for invalid requests to this endpoint (i.e. missing a code), code 401 with body "NO" for an incorrect guess and
+code 200 with body "OK" for a correct one. It otherwise does nothing with the code.
 
