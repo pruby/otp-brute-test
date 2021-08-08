@@ -9,9 +9,9 @@ the same way from the point of view of attempting to guess codes.
 
 ## Installation and Running
 
-This needs to be compiled with a recent version of the Go runtime.
+This needs to be compiled with a recent version of the Go compiler.
 
-1. Download and install the Go runtime from https://golang.org/
+1. Download and install Go from https://golang.org/
 2. Check out this repository using `git clone https://github.com/pruby/otp-brute-test`.
 3. Enter the checked out directory, and install dependencies by running `go mod download`.
 4. Build the server by running `go build server.go`. This will create a binary called "server", or "server.exe" on Windows.
