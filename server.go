@@ -56,7 +56,6 @@ func InitOtp() (*OtpState, error) {
 		Issuer: "test",
 		AccountName: "test@example.com",
 		SecretSize: 20,
-		Digits: otp.Digits(st.Digits),
 	})
 	if err != nil {
 		return nil, err
@@ -64,7 +63,7 @@ func InitOtp() (*OtpState, error) {
 
 	st.Valids = make(map[string]bool)
 	for st.Counter = 0; st.Counter < uint64(st.Window); st.Counter++ {
-		code, _ := hotp.GenerateCode(st.Key.Secret(), st.Counter)
+		code, _ := hotp.GenerateCodeCustom(st.Key.Secret(), st.Counter, hotp.ValidateOpts{Digits: otp.Digits(st.Digits)})
 		st.Valids[code] = true
 	}
 
@@ -73,6 +72,7 @@ func InitOtp() (*OtpState, error) {
 }
 
 func (st *OtpState) Worker() {
+	generateOpts := hotp.ValidateOpts{Digits: otp.Digits(st.Digits)}
 	for {
 		st.Update.RLock()
 		var valids []string
@@ -84,11 +84,11 @@ func (st *OtpState) Worker() {
 
 		time.Sleep(time.Second * time.Duration(st.Period))
 		st.Update.Lock()
-		code, _ := hotp.GenerateCode(st.Key.Secret(), st.Counter)
+		code, _ := hotp.GenerateCodeCustom(st.Key.Secret(), st.Counter, generateOpts)
 		st.Valids[code] = true
 		st.Counter++
 
-		code2, _ := hotp.GenerateCode(st.Key.Secret(), st.Counter - uint64(st.Window))
+		code2, _ := hotp.GenerateCodeCustom(st.Key.Secret(), st.Counter - uint64(st.Window), generateOpts)
 		delete(st.Valids, code2)
 		st.Update.Unlock()
 	}
@@ -125,6 +125,10 @@ func main() {
 		}
 	})
 
-	r.Run(":3000")
+	bind := ":3000"
+	if bind_env := os.Getenv("OTP_SERVER_ADDR"); bind_env != "" {
+		bind = bind_env
+	}
+	r.Run(bind)
 }
 
